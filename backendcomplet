@@ -1,0 +1,248 @@
+<?php
+declare(strict_types=1);
+
+/*
+ 
+  Lancement :
+  php -S localhost:8000 index.php
+
+  Routes API :
+  GET  /api/health
+  GET  /api/destinations
+  GET  /api/destinations/1
+  GET  /api/transports?destination_id=1
+  GET  /api/hebergements?destination_id=1
+  GET  /api/activites?destination_id=1
+  GET  /api/notifications?user_id=1
+  POST /api/login
+  POST /api/register
+  POST /api/reservations
+*/
+
+header('Access-Control-Allow-Origin: *');
+header('Access-Control-Allow-Headers: Content-Type, Authorization');
+header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS');
+
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    exit;
+}
+
+function json_response(array $data, int $status = 200): void
+{
+    http_response_code($status);
+    header('Content-Type: application/json; charset=utf-8');
+    echo json_encode($data, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
+    exit;
+}
+
+function json_input(): array
+{
+    $raw = file_get_contents('php://input');
+    $data = json_decode($raw ?: '{}', true);
+    return is_array($data) ? $data : [];
+}
+
+function demo_data(): array
+{
+    return [
+        'users' => [
+            ['id' => 1, 'name' => 'Emma Martin', 'email' => 'emma@voyagevista.test', 'password' => 'demo123', 'role' => 'client'],
+            ['id' => 2, 'name' => 'Leo Bernard', 'email' => 'leo@voyagevista.test', 'password' => 'demo123', 'role' => 'provider'],
+            ['id' => 3, 'name' => 'Admin VoyageVista', 'email' => 'admin@voyagevista.test', 'password' => 'demo123', 'role' => 'admin'],
+            ['id' => 4, 'name' => 'Maya Moderation', 'email' => 'moderator@voyagevista.test', 'password' => 'demo123', 'role' => 'moderator'],
+        ],
+        'destinations' => [
+            ['id' => 1, 'name' => 'Lisbonne', 'country' => 'Portugal', 'category' => 'Culture', 'duration' => 3, 'budget' => 480, 'status' => 'published', 'image' => 'lisbon', 'description' => 'Week-end lumineux entre tramways, azulejos, points de vue et bord de mer.'],
+            ['id' => 2, 'name' => 'Barcelone', 'country' => 'Espagne', 'category' => 'Ville', 'duration' => 4, 'budget' => 520, 'status' => 'published', 'image' => 'barcelona', 'description' => 'Sejour urbain entre architecture, plage, tapas et quartiers vivants.'],
+            ['id' => 3, 'name' => 'Marrakech', 'country' => 'Maroc', 'category' => 'Experience', 'duration' => 5, 'budget' => 610, 'status' => 'published', 'image' => 'marrakech', 'description' => 'Riad, souks, jardins et excursion desert pour un voyage depaysant.'],
+            ['id' => 4, 'name' => 'Rome', 'country' => 'Italie', 'category' => 'Patrimoine', 'duration' => 4, 'budget' => 560, 'status' => 'pending', 'image' => 'rome', 'description' => 'Parcours historique entre Colisee, fontaines, places et gastronomie.'],
+        ],
+        'transports' => [
+            ['id' => 1, 'destination_id' => 1, 'type' => 'Avion', 'company' => 'Vista Air', 'from' => 'Paris ORY', 'to' => 'Lisbonne', 'departure' => '2026-06-12 08:30', 'arrival' => '2026-06-12 10:05', 'price' => 150, 'seats' => 12],
+            ['id' => 2, 'destination_id' => 1, 'type' => 'Avion', 'company' => 'Vista Air', 'from' => 'Lisbonne', 'to' => 'Paris ORY', 'departure' => '2026-06-15 18:10', 'arrival' => '2026-06-15 21:35', 'price' => 145, 'seats' => 10],
+            ['id' => 3, 'destination_id' => 2, 'type' => 'Train', 'company' => 'EuroRail', 'from' => 'Paris Gare de Lyon', 'to' => 'Barcelone', 'departure' => '2026-06-20 07:45', 'arrival' => '2026-06-20 14:20', 'price' => 120, 'seats' => 18],
+            ['id' => 4, 'destination_id' => 3, 'type' => 'Avion', 'company' => 'Atlas Wings', 'from' => 'Paris CDG', 'to' => 'Marrakech', 'departure' => '2026-07-02 09:10', 'arrival' => '2026-07-02 11:50', 'price' => 210, 'seats' => 9],
+        ],
+        'hebergements' => [
+            ['id' => 1, 'destination_id' => 1, 'name' => 'Casa do Bairro', 'type' => 'Appartement', 'capacity' => 4, 'price' => 92, 'available' => 3],
+            ['id' => 2, 'destination_id' => 1, 'name' => 'Hostel Miradouro', 'type' => 'Auberge', 'capacity' => 2, 'price' => 55, 'available' => 7],
+            ['id' => 3, 'destination_id' => 2, 'name' => 'Hotel Rambla', 'type' => 'Hotel', 'capacity' => 3, 'price' => 115, 'available' => 4],
+            ['id' => 4, 'destination_id' => 3, 'name' => 'Riad Safran', 'type' => 'Riad', 'capacity' => 2, 'price' => 80, 'available' => 5],
+        ],
+        'activites' => [
+            ['id' => 1, 'destination_id' => 1, 'name' => 'Visite guidee Alfama', 'category' => 'Culture', 'date' => '2026-06-13 10:00', 'price' => 35, 'seats' => 8],
+            ['id' => 2, 'destination_id' => 1, 'name' => 'Cours de cuisine portugaise', 'category' => 'Gastronomie', 'date' => '2026-06-14 17:00', 'price' => 58, 'seats' => 6],
+            ['id' => 3, 'destination_id' => 2, 'name' => 'Parcours Gaudi', 'category' => 'Culture', 'date' => '2026-06-21 11:00', 'price' => 42, 'seats' => 12],
+            ['id' => 4, 'destination_id' => 3, 'name' => 'Excursion desert', 'category' => 'Aventure', 'date' => '2026-07-04 08:00', 'price' => 95, 'seats' => 5],
+        ],
+        'notifications' => [
+            ['id' => 1, 'user_id' => 1, 'title' => 'Bienvenue', 'message' => 'Ton espace VoyageVista est pret.', 'read' => false],
+            ['id' => 2, 'user_id' => 2, 'title' => 'Offre en attente', 'message' => 'Rome est en attente de moderation.', 'read' => false],
+            ['id' => 3, 'user_id' => 1, 'title' => 'Rappel panier', 'message' => 'Ton sejour peut encore etre complete avec des activites.', 'read' => false],
+        ],
+    ];
+}
+
+function collection(string $name): array
+{
+    $data = demo_data();
+    return $data[$name] ?? [];
+}
+
+function find_item(string $collection, int $id): ?array
+{
+    foreach (collection($collection) as $item) {
+        if ((int)$item['id'] === $id) {
+            return $item;
+        }
+    }
+    return null;
+}
+
+function filter_by_destination(string $collection): array
+{
+    $items = collection($collection);
+    $destinationId = isset($_GET['destination_id']) ? (int)$_GET['destination_id'] : 0;
+    if (!$destinationId) {
+        return $items;
+    }
+    return array_values(array_filter($items, fn($item) => (int)$item['destination_id'] === $destinationId));
+}
+
+function handle_login(): void
+{
+    $payload = json_input();
+    $email = trim($payload['email'] ?? '');
+    $password = $payload['password'] ?? '';
+
+    foreach (collection('users') as $user) {
+        if ($user['email'] === $email && $user['password'] === $password) {
+            unset($user['password']);
+            json_response([
+                'user' => $user,
+                'token' => base64_encode($user['email'] . ':voyagevista-demo'),
+            ]);
+        }
+    }
+
+    json_response(['error' => 'Identifiants invalides'], 401);
+}
+
+function handle_register(): void
+{
+    $payload = json_input();
+    $name = trim($payload['name'] ?? '');
+    $email = trim($payload['email'] ?? '');
+    $password = $payload['password'] ?? '';
+
+    if ($name === '' || $email === '' || strlen($password) < 4) {
+        json_response(['error' => 'Nom, email et mot de passe requis'], 422);
+    }
+
+    json_response([
+        'id' => 99,
+        'name' => $name,
+        'email' => $email,
+        'role' => 'client',
+        'message' => 'Compte cree en simulation',
+    ], 201);
+}
+
+function handle_create_reservation(): void
+{
+    $payload = json_input();
+    $cart = $payload['cart'] ?? [];
+    $total = (float)($payload['total'] ?? 0);
+
+    if (!$cart || $total <= 0) {
+        json_response(['error' => 'Panier vide ou total invalide'], 422);
+    }
+
+    json_response([
+        'id' => random_int(1000, 9999),
+        'status' => 'confirmee',
+        'payment' => 'simule',
+        'total' => $total,
+        'message' => 'Reservation confirmee avec paiement simule',
+        'notification' => [
+            'title' => 'Reservation confirmee',
+            'message' => 'Votre sejour VoyageVista a bien ete valide.',
+        ],
+    ], 201);
+}
+
+function handle_notifications(): void
+{
+    $userId = isset($_GET['user_id']) ? (int)$_GET['user_id'] : 0;
+    $notifications = collection('notifications');
+
+    if ($userId) {
+        $notifications = array_values(array_filter($notifications, fn($n) => (int)$n['user_id'] === $userId));
+    }
+
+    json_response($notifications);
+}
+
+$method = $_SERVER['REQUEST_METHOD'];
+$path = trim(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH), '/');
+$parts = $path === '' ? [] : explode('/', $path);
+
+if (($parts[0] ?? '') === 'api') {
+    array_shift($parts);
+}
+
+$resource = $parts[0] ?? 'health';
+$id = isset($parts[1]) ? (int)$parts[1] : null;
+
+if ($resource === 'health') {
+    json_response(['app' => 'VoyageVista API', 'status' => 'ok']);
+}
+
+if ($resource === 'login' && $method === 'POST') {
+    handle_login();
+}
+
+if ($resource === 'register' && $method === 'POST') {
+    handle_register();
+}
+
+if ($resource === 'reservations' && $method === 'POST') {
+    handle_create_reservation();
+}
+
+if ($resource === 'reservations' && $method === 'GET') {
+    json_response([
+        ['id' => 1, 'destination' => 'Lisbonne', 'status' => 'confirmee', 'total' => 480, 'date' => '2026-06-12'],
+        ['id' => 2, 'destination' => 'Barcelone', 'status' => 'panier', 'total' => 520, 'date' => '2026-06-20'],
+    ]);
+}
+
+if ($resource === 'notifications') {
+    handle_notifications();
+}
+
+$collections = [
+    'destinations' => 'destinations',
+    'transports' => 'transports',
+    'hebergements' => 'hebergements',
+    'activites' => 'activites',
+    'users' => 'users',
+];
+
+if (!isset($collections[$resource])) {
+    json_response(['error' => 'Route inconnue', 'route' => $resource], 404);
+}
+
+if ($id) {
+    $item = find_item($collections[$resource], $id);
+    if (!$item) {
+        json_response(['error' => 'Element introuvable'], 404);
+    }
+    json_response($item);
+}
+
+if (in_array($resource, ['transports', 'hebergements', 'activites'], true)) {
+    json_response(filter_by_destination($collections[$resource]));
+}
+
+json_response(collection($collections[$resource]));
