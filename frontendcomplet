@@ -1,0 +1,467 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>VoyageVista - Frontend</title>
+  <style>
+    :root{
+      --blue:#1f5f8b;
+      --teal:#1b998b;
+      --orange:#f39c12;
+      --ink:#24313d;
+      --muted:#667684;
+      --line:#d8e0e6;
+      --paper:#f7fafc;
+      --white:#fff;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:Arial,Helvetica,sans-serif;
+      color:var(--ink);
+      background:var(--paper);
+    }
+    button,input,select{font:inherit}
+    button{cursor:pointer}
+    .topbar{
+      height:68px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      padding:0 28px;
+      background:var(--white);
+      border-bottom:1px solid var(--line);
+      position:sticky;
+      top:0;
+      z-index:10;
+    }
+    .brand{
+      border:0;
+      background:transparent;
+      color:var(--blue);
+      font-size:22px;
+      font-weight:800;
+    }
+    .nav{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+    .nav button{
+      border:0;
+      background:transparent;
+      color:var(--ink);
+      padding:8px;
+    }
+    .nav button:hover{color:var(--blue)}
+    .hero{
+      max-width:1180px;
+      margin:28px auto;
+      padding:46px;
+      min-height:430px;
+      display:grid;
+      grid-template-columns:1.5fr .8fr;
+      gap:28px;
+      align-items:center;
+      color:white;
+      background:
+        linear-gradient(120deg,rgba(31,95,139,.94),rgba(27,153,139,.78)),
+        url("https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1600&q=80");
+      background-size:cover;
+      background-position:center;
+    }
+    .hero h1{
+      margin:0 0 16px;
+      max-width:760px;
+      font-size:46px;
+      line-height:1.05;
+    }
+    .hero p{max-width:680px;font-size:18px}
+    .eyebrow{
+      text-transform:uppercase;
+      font-weight:800;
+      font-size:12px!important;
+      letter-spacing:.06em;
+    }
+    .hero-card{
+      background:rgba(255,255,255,.96);
+      color:var(--ink);
+      border-radius:8px;
+      padding:22px;
+    }
+    .search{
+      display:flex;
+      gap:10px;
+      margin-top:22px;
+      max-width:620px;
+    }
+    input,select{
+      width:100%;
+      border:1px solid var(--line);
+      border-radius:8px;
+      padding:12px 13px;
+      background:white;
+    }
+    .btn{
+      border:1px solid var(--orange);
+      background:var(--orange);
+      color:#1f1f1f;
+      border-radius:8px;
+      padding:11px 15px;
+      font-weight:800;
+    }
+    .btn.secondary{background:white;border-color:var(--line)}
+    .btn.danger{background:#fbe1e1;border-color:#e7aaaa}
+    .section{max-width:1180px;margin:0 auto;padding:28px 24px}
+    .section-title{
+      display:flex;
+      justify-content:space-between;
+      align-items:end;
+      gap:18px;
+      margin-bottom:18px;
+    }
+    .section-title h2,.section-title h1{margin:0;color:var(--blue)}
+    .muted{color:var(--muted)}
+    .grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}
+    .grid.two{grid-template-columns:repeat(2,minmax(0,1fr))}
+    .card,.panel{
+      background:white;
+      border:1px solid var(--line);
+      border-radius:8px;
+      padding:18px;
+    }
+    .card{display:flex;flex-direction:column;gap:10px}
+    .photo{
+      min-height:145px;
+      border-radius:7px;
+      background-size:cover;
+      background-position:center;
+    }
+    .lisbon{background-image:linear-gradient(135deg,rgba(31,95,139,.1),rgba(243,156,18,.25)),url("https://images.unsplash.com/photo-1555881400-74d7acaacd8b?auto=format&fit=crop&w=900&q=80")}
+    .barcelona{background-image:linear-gradient(135deg,rgba(31,95,139,.1),rgba(243,156,18,.25)),url("https://images.unsplash.com/photo-1583422409516-2895a77efded?auto=format&fit=crop&w=900&q=80")}
+    .marrakech{background-image:linear-gradient(135deg,rgba(31,95,139,.1),rgba(243,156,18,.25)),url("https://images.unsplash.com/photo-1597212720416-8fcd4d4714f9?auto=format&fit=crop&w=900&q=80")}
+    .rome{background-image:linear-gradient(135deg,rgba(31,95,139,.1),rgba(243,156,18,.25)),url("https://images.unsplash.com/photo-1552832230-c0197dd311b5?auto=format&fit=crop&w=900&q=80")}
+    .tag{
+      width:max-content;
+      display:inline-block;
+      background:#e7f3f4;
+      color:var(--blue);
+      padding:5px 9px;
+      border-radius:999px;
+      font-size:12px;
+      font-weight:800;
+    }
+    .meta,.row{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:14px;
+    }
+    .row{
+      background:white;
+      border:1px solid var(--line);
+      border-radius:8px;
+      padding:14px 16px;
+      margin-bottom:10px;
+    }
+    .detail{
+      max-width:1180px;
+      margin:28px auto 0;
+      padding:24px;
+      background:white;
+      border:1px solid var(--line);
+      border-radius:8px;
+      display:grid;
+      grid-template-columns:420px 1fr;
+      gap:28px;
+    }
+    .detail .photo{min-height:300px}
+    .auth{
+      min-height:72vh;
+      display:grid;
+      place-items:center;
+    }
+    .auth .panel{
+      width:min(440px,calc(100% - 32px));
+      display:grid;
+      gap:12px;
+    }
+    .footer{
+      margin-top:40px;
+      padding:24px;
+      text-align:center;
+      color:var(--muted);
+      background:white;
+      border-top:1px solid var(--line);
+    }
+    .hidden{display:none!important}
+    @media(max-width:900px){
+      .topbar{height:auto;align-items:flex-start;flex-direction:column;padding:14px}
+      .nav{margin-top:10px}
+      .hero,.detail{grid-template-columns:1fr;margin:16px}
+      .hero{padding:28px}
+      .hero h1{font-size:33px}
+      .grid,.grid.two{grid-template-columns:1fr}
+      .section-title{display:block}
+      .search{flex-direction:column}
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <button class="brand" onclick="go('home')">VoyageVista</button>
+    <nav class="nav">
+      <button onclick="go('home')">Accueil</button>
+      <button onclick="go('trip')">Mon sejour</button>
+      <button onclick="go('cart')">Panier <span id="cartCount">0</span></button>
+      <button onclick="go('notifications')">Notifications</button>
+      <button onclick="go('profile')">Profil</button>
+    </nav>
+  </header>
+
+  <main id="app"></main>
+
+  <footer class="footer">
+    Projet Web dynamique 2026 - VoyageVista - Frontend autonome.
+  </footer>
+
+  <script>
+    const destinations = [
+      {id:1,name:"Lisbonne",country:"Portugal",category:"Culture",duration:3,budget:480,image:"lisbon",description:"Week-end lumineux entre tramways, azulejos, points de vue et bord de mer."},
+      {id:2,name:"Barcelone",country:"Espagne",category:"Ville",duration:4,budget:520,image:"barcelona",description:"Sejour urbain entre architecture, plage, tapas et quartiers vivants."},
+      {id:3,name:"Marrakech",country:"Maroc",category:"Experience",duration:5,budget:610,image:"marrakech",description:"Riad, souks, jardins et excursion desert pour un voyage depaysant."},
+      {id:4,name:"Rome",country:"Italie",category:"Patrimoine",duration:4,budget:560,image:"rome",description:"Parcours historique entre Colisee, fontaines, places et gastronomie."}
+    ];
+    const transports = [
+      {id:1,destinationId:1,type:"Avion",label:"Paris ORY -> Lisbonne",date:"12/06/2026 08:30",price:150,seats:12},
+      {id:2,destinationId:1,type:"Avion",label:"Lisbonne -> Paris ORY",date:"15/06/2026 18:10",price:145,seats:10},
+      {id:3,destinationId:2,type:"Train",label:"Paris -> Barcelone",date:"20/06/2026 07:45",price:120,seats:18},
+      {id:4,destinationId:3,type:"Avion",label:"Paris CDG -> Marrakech",date:"02/07/2026 09:10",price:210,seats:9}
+    ];
+    const hotels = [
+      {id:1,destinationId:1,name:"Casa do Bairro",type:"Appartement",capacity:4,price:92,available:3},
+      {id:2,destinationId:1,name:"Hostel Miradouro",type:"Auberge",capacity:2,price:55,available:7},
+      {id:3,destinationId:2,name:"Hotel Rambla",type:"Hotel",capacity:3,price:115,available:4},
+      {id:4,destinationId:3,name:"Riad Safran",type:"Riad",capacity:2,price:80,available:5}
+    ];
+    const activities = [
+      {id:1,destinationId:1,name:"Visite guidee Alfama",category:"Culture",date:"13/06/2026 10:00",price:35,seats:8},
+      {id:2,destinationId:1,name:"Cours de cuisine portugaise",category:"Gastronomie",date:"14/06/2026 17:00",price:58,seats:6},
+      {id:3,destinationId:2,name:"Parcours Gaudi",category:"Culture",date:"21/06/2026 11:00",price:42,seats:12},
+      {id:4,destinationId:3,name:"Excursion desert",category:"Aventure",date:"04/07/2026 08:00",price:95,seats:5}
+    ];
+    const users = [
+      {name:"Emma Martin",email:"emma@voyagevista.test",password:"demo123",role:"Voyageur"},
+      {name:"Leo Bernard",email:"leo@voyagevista.test",password:"demo123",role:"Prestataire"},
+      {name:"Admin VoyageVista",email:"admin@voyagevista.test",password:"demo123",role:"Admin"}
+    ];
+
+    const state = {
+      user: JSON.parse(localStorage.getItem("vv_user") || "null"),
+      cart: JSON.parse(localStorage.getItem("vv_cart") || '{"destination":null,"transports":[],"hotel":null,"activities":[]}'),
+      notifications: JSON.parse(localStorage.getItem("vv_notifications") || '[{"title":"Bienvenue","message":"Ton espace VoyageVista est pret."}]')
+    };
+
+    function save(){
+      localStorage.setItem("vv_user", JSON.stringify(state.user));
+      localStorage.setItem("vv_cart", JSON.stringify(state.cart));
+      localStorage.setItem("vv_notifications", JSON.stringify(state.notifications));
+      document.getElementById("cartCount").textContent = state.cart.transports.length + state.cart.activities.length + (state.cart.hotel ? 1 : 0);
+    }
+    function money(value){return value + " EUR";}
+    function go(page, id){window.location.hash = id ? page + ":" + id : page; render();}
+    function currentRoute(){
+      const raw = window.location.hash.replace("#","");
+      if(!raw) return ["home", null];
+      const parts = raw.split(":");
+      return [parts[0], parts[1] ? Number(parts[1]) : null];
+    }
+    function add(type,item){
+      if(type === "destination") state.cart.destination = item;
+      if(type === "transport" && !state.cart.transports.some(x=>x.id===item.id)) state.cart.transports.push(item);
+      if(type === "hotel") state.cart.hotel = item;
+      if(type === "activity" && !state.cart.activities.some(x=>x.id===item.id)) state.cart.activities.push(item);
+      save();
+      alert("Ajoute au panier");
+    }
+    function total(){
+      return state.cart.transports.reduce((s,x)=>s+x.price,0)
+        + state.cart.activities.reduce((s,x)=>s+x.price,0)
+        + (state.cart.hotel ? state.cart.hotel.price * 3 : 0);
+    }
+    function card(d){
+      return `<article class="card">
+        <div class="photo ${d.image}"></div>
+        <span class="tag">${d.category}</span>
+        <h3>${d.name}</h3>
+        <p>${d.description}</p>
+        <div class="meta"><span>${d.duration} jours</span><strong>${money(d.budget)}</strong></div>
+        <button class="btn" onclick="go('destination',${d.id})">Voir details</button>
+      </article>`;
+    }
+    function home(){
+      return `<section class="hero">
+        <div>
+          <p class="eyebrow">Planification de voyages</p>
+          <h1>Compose ton sejour sans passer par dix plateformes.</h1>
+          <p>Destination, transport, hebergement, activites, panier et reservation simulee dans un seul parcours.</p>
+          <div class="search">
+            <input id="searchInput" placeholder="Rechercher Lisbonne, Barcelone..." oninput="filterHome()">
+            <button class="btn" onclick="filterHome()">Chercher</button>
+          </div>
+        </div>
+        <aside class="hero-card">
+          <h2>Sejour en cours</h2>
+          <p>Total actuel : <strong>${money(total())}</strong></p>
+          <p>Le site verifie les dates, places et disponibilites avant confirmation.</p>
+        </aside>
+      </section>
+      <section class="section">
+        <div class="section-title"><h2>Destinations</h2><p id="count">${destinations.length} resultat(s)</p></div>
+        <div class="grid" id="destGrid">${destinations.map(card).join("")}</div>
+      </section>`;
+    }
+    function filterHome(){
+      const q = document.getElementById("searchInput").value.toLowerCase();
+      const visible = destinations.filter(d => (d.name + d.country + d.category).toLowerCase().includes(q));
+      document.getElementById("destGrid").innerHTML = visible.map(card).join("");
+      document.getElementById("count").textContent = visible.length + " resultat(s)";
+    }
+    function destinationPage(id){
+      const d = destinations.find(x=>x.id===id) || destinations[0];
+      const ts = transports.filter(x=>x.destinationId===d.id);
+      const hs = hotels.filter(x=>x.destinationId===d.id);
+      const as = activities.filter(x=>x.destinationId===d.id);
+      return `<section class="detail">
+        <div class="photo ${d.image}"></div>
+        <div>
+          <span class="tag">${d.category}</span>
+          <h1>${d.name}, ${d.country}</h1>
+          <p>${d.description}</p>
+          <p class="muted">Budget indicatif ${money(d.budget)} - ${d.duration} jours</p>
+          <button class="btn" onclick='add("destination", ${JSON.stringify(d)})'>Choisir cette destination</button>
+        </div>
+      </section>
+      <section class="section">
+        <h2>Transports</h2>
+        ${ts.map(x=>`<div class="row"><div><strong>${x.label}</strong><p>${x.type} - ${x.date} - ${x.seats} places</p></div><div><strong>${money(x.price)}</strong> <button class="btn" onclick='add("transport", ${JSON.stringify(x)})'>Ajouter</button></div></div>`).join("")}
+      </section>
+      <section class="section">
+        <h2>Hebergements</h2>
+        <div class="grid">${hs.map(x=>`<article class="card"><h3>${x.name}</h3><p>${x.type} - capacite ${x.capacity}</p><p>${x.available} disponibilites restantes</p><div class="meta"><strong>${money(x.price)}/nuit</strong><button class="btn" onclick='add("hotel", ${JSON.stringify(x)})'>Choisir</button></div></article>`).join("")}</div>
+      </section>
+      <section class="section">
+        <h2>Activites</h2>
+        <div class="grid">${as.map(x=>`<article class="card"><span class="tag">${x.category}</span><h3>${x.name}</h3><p>${x.date} - ${x.seats} places</p><div class="meta"><strong>${money(x.price)}</strong><button class="btn" onclick='add("activity", ${JSON.stringify(x)})'>Ajouter</button></div></article>`).join("")}</div>
+      </section>`;
+    }
+    function cart(){
+      const c = state.cart;
+      return `<section class="section">
+        <h1>Panier</h1>
+        <div class="panel">
+          <h2>${c.destination ? c.destination.name : "Aucune destination choisie"}</h2>
+          ${c.transports.map(x=>`<p>Transport : ${x.label} - ${money(x.price)}</p>`).join("")}
+          ${c.hotel ? `<p>Hebergement : ${c.hotel.name} x 3 nuits - ${money(c.hotel.price * 3)}</p>` : ""}
+          ${c.activities.map(x=>`<p>Activite : ${x.name} - ${money(x.price)}</p>`).join("")}
+          <h3>Total : ${money(total())}</h3>
+          <button class="btn" onclick="go('payment')">Valider</button>
+          <button class="btn danger" onclick="clearCart()">Vider</button>
+        </div>
+      </section>`;
+    }
+    function clearCart(){
+      state.cart = {destination:null,transports:[],hotel:null,activities:[]};
+      save();
+      go("cart");
+    }
+    function payment(){
+      return `<section class="section">
+        <h1>Paiement simule</h1>
+        <div class="panel">
+          <p>Total a regler : <strong>${money(total())}</strong></p>
+          <p>Les disponibilites sont controlees avant confirmation.</p>
+          <button class="btn" onclick="confirmPayment()">Confirmer le paiement</button>
+        </div>
+      </section>`;
+    }
+    function confirmPayment(){
+      state.notifications.unshift({title:"Reservation confirmee",message:"Votre sejour VoyageVista a ete valide avec paiement simule."});
+      clearCart();
+      go("notifications");
+    }
+    function login(){
+      return `<section class="auth">
+        <form class="panel" onsubmit="doLogin(event)">
+          <h1>Connexion</h1>
+          <input id="email" value="emma@voyagevista.test">
+          <input id="password" type="password" value="demo123">
+          <button class="btn">Se connecter</button>
+          <p class="muted">Comptes : emma, leo, admin @voyagevista.test - mot de passe demo123</p>
+        </form>
+      </section>`;
+    }
+    function doLogin(e){
+      e.preventDefault();
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
+      const user = users.find(u=>u.email===email && u.password===password);
+      if(!user){alert("Identifiants invalides");return;}
+      state.user = user;
+      save();
+      go("profile");
+    }
+    function profile(){
+      if(!state.user) return login();
+      return `<section class="section">
+        <h1>Profil</h1>
+        <div class="panel">
+          <h2>${state.user.name}</h2>
+          <p>${state.user.email}</p>
+          <p>Role : ${state.user.role}</p>
+          <button class="btn secondary" onclick="logout()">Deconnexion</button>
+        </div>
+        <div class="grid two" style="margin-top:18px">
+          <article class="card"><h3>Dashboard admin</h3><p>Gestion utilisateurs, moderation et statistiques.</p></article>
+          <article class="card"><h3>Espace prestataire</h3><p>Creation d'offres et suivi des reservations.</p></article>
+        </div>
+      </section>`;
+    }
+    function logout(){
+      state.user = null;
+      save();
+      go("home");
+    }
+    function trip(){
+      const c = state.cart;
+      return `<section class="section">
+        <h1>Mon sejour</h1>
+        <div class="panel">
+          <h2>${c.destination ? c.destination.name : "Pas encore de destination"}</h2>
+          <p>${c.transports.length} transport(s), ${c.hotel ? 1 : 0} hebergement, ${c.activities.length} activite(s).</p>
+          <p>Total actuel : <strong>${money(total())}</strong></p>
+        </div>
+      </section>`;
+    }
+    function notifications(){
+      return `<section class="section">
+        <h1>Notifications</h1>
+        <div class="grid">${state.notifications.map(n=>`<article class="card"><h3>${n.title}</h3><p>${n.message}</p></article>`).join("")}</div>
+      </section>`;
+    }
+    function render(){
+      save();
+      const [page,id] = currentRoute();
+      const views = {
+        home:home,
+        cart:cart,
+        payment:payment,
+        profile:profile,
+        login:login,
+        trip:trip,
+        notifications:notifications
+      };
+      document.getElementById("app").innerHTML = page === "destination" ? destinationPage(id) : (views[page] || home)();
+    }
+    window.addEventListener("hashchange", render);
+    render();
+  </script>
+</body>
+</html>
