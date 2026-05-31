@@ -193,3 +193,22 @@ CREATE TABLE reservations_hebergement (
     FOREIGN KEY (id_hebergement)
     REFERENCES hebergements(id_hebergement)
 );
+
+
+
+CREATE TABLE reservations_transport (
+    id_reservation_transport INT AUTO_INCREMENT PRIMARY KEY,
+
+    id_user INT NOT NULL,
+    id_transport INT NOT NULL,
+
+    date_reservation TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+    statut VARCHAR(50) DEFAULT 'confirmee',
+
+    FOREIGN KEY (id_user)
+    REFERENCES utilisateurs(id_user),
+
+    FOREIGN KEY (id_transport)
+    REFERENCES transports(id_transport)
+);
