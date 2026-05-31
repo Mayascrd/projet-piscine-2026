@@ -1,10 +1,15 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Mon site</title>
-    <link rel="stylesheet" href="css/style.css">
-</head>
-<body>
-    <h1>Bonjour !</h1>
-</body>
-</html>
+<?php
+
+header("Access-Control-Allow-Origin: *");
+
+header("Access-Control-Allow-Headers: *");
+
+header("Access-Control-Allow-Methods: *");
+
+if($_SERVER["REQUEST_METHOD"] === "OPTIONS")
+{
+    http_response_code(200);
+    exit;
+}
+
+require_once __DIR__ . '/routes/api.php';
