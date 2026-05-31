@@ -44,4 +44,7 @@ switch ($uri)
         echo json_encode([
             "message" => "Route introuvable"
         ]);
+    require_once __DIR__ . '/../controllers/DestinationController.php';
+
+$destinationController = new DestinationController($db);
 }
