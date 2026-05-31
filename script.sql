@@ -169,3 +169,27 @@ VALUES
 ('Prestataire'),
 ('Moderateur'),
 ('Administrateur');
+
+
+
+CREATE TABLE reservations_hebergement (
+    id_reservation_hebergement INT AUTO_INCREMENT PRIMARY KEY,
+
+    id_user INT NOT NULL,
+    id_hebergement INT NOT NULL,
+
+    date_arrivee DATE NOT NULL,
+    date_depart DATE NOT NULL,
+
+    nb_personnes INT NOT NULL,
+
+    statut VARCHAR(50) DEFAULT 'confirmee',
+
+    date_reservation TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+    FOREIGN KEY (id_user)
+    REFERENCES utilisateurs(id_user),
+
+    FOREIGN KEY (id_hebergement)
+    REFERENCES hebergements(id_hebergement)
+);
